@@ -26,20 +26,22 @@ CREATE TABLE bot(
 ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ENGINE=InnoDB;
 
 CREATE TABLE hook(
-  id INT NOT NULL AUTO_INCREMENT,
-  
+  id BINARY(16) NOT NULL,
+
   name VARCHAR(126) NOT NULL DEFAULT '',
-  channel_id VARCHAR(255) NOT NULL,
-  token VARCHAR(255) NOT NULL,
-  avatar VARCHAR(255) NOT NULL,
-  guild_id VARCHAR(255) NOT NULL,
-  hook_id VARCHAR(255) NOT NULL,
+  channel_id VARCHAR(255) NOT NULL DEFAULT '',
+  token VARCHAR(255) NOT NULL DEFAULT '',
+  avatar VARCHAR(255) NOT NULL DEFAULT '',
+  guild_id VARCHAR(255) NOT NULL DEFAULT '',
+  hook_id VARCHAR(255) NOT NULL DEFAULT '',
 
-  link VARCHAR(255) NOT NULL DEFAULT '',
+  owner BINARY(16) NOT NULL,
 
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (owner) REFERENCES user(id)
 ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ENGINE=InnoDB;
 
 
 # Initialize default data
-# ...
+INSERT INTO user (id, name, secret) VALUES
+(UNHEX('8fc3cc1961964d12b67494dac10a7d93'), 'creohex', UNHEX('4cadd7d38eda4dda8415720b871f0a2d'))

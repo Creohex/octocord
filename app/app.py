@@ -114,6 +114,19 @@ def register_user():
 
     return json.dumps(new_user.as_json())
 
+@app.route("/hook")
+def hook_list():
+    check_headers(request)
+    return json.dumps({"existing hooks": Hook.get_hooks(request.headers['UUID'])})
+
+@app.route("/hook/add", methods=['POST'])
+def hook_add():
+    pass
+
+@app.route("/hook/<hook_uuid>", methods=['POST'])
+def hook_post(hook_uuid):
+    pass
+
 
 # objects:
 class User():
@@ -135,13 +148,14 @@ class User():
     def get_bots(self):
         pass
 
-    def get_hooks(self):
+    def add_hook(self, payload):
         pass
 
     @staticmethod
     def get_users():
         return [User(id.lower(), name, secret.lower()) for id, name, secret
                 in query_db("SELECT HEX(id), name, HEX(secret) FROM user")]
+
 
 
 class Bot():
@@ -153,12 +167,40 @@ class Bot():
 
 
 class Hook():
-    def __init__(self, id, name, link, obj):
-        pass
+    def __init__(self, id, name, channel_id, token, avatar, guild_id, hook_id, owner):
+        self.id = id
+        self.name = name
+        self.channel_id = channel_id
+        self.token = token
+        self.avatar = avatar
+        self.guild_id = guild_id
+        self.hook_id = hook_id
+        self.owner = owner
 
     def __str__(self):
-        pass
+        print("%s (%s)" % (self.name, self.id))
 
+    def as_json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "channel_id": self.channel_id,
+            "token": self.token,
+            "avatar": self.avatar,
+            "guild_id": self.guild_id,
+            "hook_id": self.hook_id,
+            "owner": self.owner
+        }
+
+    def get_link(self):
+        return "https://discordapp.com/api/webhooks/%s/%s" % (self.hook_id, self.token)
+
+    @staticmethod
+    def get_hooks(uuid):
+        return [Hook(ID.lower(), name, channel_id, token, avatar, guild_id, hook_id, owner.lower())
+                for ID, name, channel_id, token, avatar, guild_id, hook_id, owner
+                in query_db("SELECT HEX(id), name, channel_id, token, avatar, guild_id, hook_id, HEX(owner) "
+                            "FROM hook WHERE owner = '%s'" % uuid)]
 
 # server start
 if __name__ == "__main__":
