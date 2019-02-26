@@ -3,8 +3,7 @@ from flask import Flask, request
 from OpenSSL import SSL
 from werkzeug.serving import make_ssl_devcert
 from functools import wraps
-import pymysql
-import uuid
+import pymysql, uuid, requests, time, datetime, socket
 import run_tests
 
 
@@ -90,7 +89,7 @@ def list_api():
 
 @app.route("/test")
 def test():
-    """ ... """
+    """ test.. """
     check_headers(request)
     return str(request.headers)
 
@@ -127,8 +126,12 @@ def hook_post(hook_uuid):
     hook = Hook.get_hook(hook_uuid)
     payload = request.get_json()
     try:
-        link = hook.get_link()
-        return(json.dumps(link))
+        requests.post(
+            url=hook.get_link(),
+            params={},
+            json=Message.test()
+        )
+        return("ok")
     except Exception as e:
         raise Exception("hook_post() error: %s" % str(e))
 
@@ -184,7 +187,6 @@ class User():
     def get_users():
         return [User(id.lower(), name, secret.lower()) for id, name, secret
                 in query_db("SELECT id, name, secret FROM user")]
-
 
 
 class Bot():
@@ -275,6 +277,22 @@ class Hook():
                     for id, name, channel_id, token, avatar, guild_id, owner_id
                     in query_db("SELECT id, name, channel_id, token, avatar, guild_id, owner_id "
                                 "FROM hook WHERE id = '%s'" % uuid))
+
+class Message:
+    @staticmethod
+    def simple(text):
+        return {"content": text}
+
+    @staticmethod
+    def test():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        addr = s.getsockname()[0]
+        s.close()
+        return {"content": "This is a test message issued from %s (%s) at %s (%s)"
+                           % (socket.gethostname(), addr, datetime.datetime.now(),
+                              datetime.timezone(datetime.timedelta()))}
+
 
 # server start
 if __name__ == "__main__":

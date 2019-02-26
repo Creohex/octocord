@@ -1,3 +1,4 @@
 Flask
 pyopenssl
 pymysql
+requests
