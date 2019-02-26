@@ -14,17 +14,16 @@ CREATE TABLE user(
   id BINARY(16) NOT NULL,
   name VARCHAR(40) NOT NULL DEFAULT '',
   secret BINARY(16) NOT NULL,
-  #secret BINARY(16) NOT NULL DEFAULT UNHEX(REPLACE(UUID(), '-', '')),
   
   PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ENGINE=InnoDB;
 
 CREATE TABLE bot(
   id INT NOT NULL AUTO_INCREMENT,
   # ...
 
   PRIMARY KEY (id)
-);
+) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ENGINE=InnoDB;
 
 CREATE TABLE hook(
   id INT NOT NULL AUTO_INCREMENT,
@@ -39,10 +38,8 @@ CREATE TABLE hook(
   link VARCHAR(255) NOT NULL DEFAULT '',
 
   PRIMARY KEY (id)
-);
-
+) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ENGINE=InnoDB;
 
 
 # Initialize default data
 # ...
-

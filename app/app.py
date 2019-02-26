@@ -47,7 +47,7 @@ def uuid_is_valid(id, ver=4):
 
 def check_headers(req):
     """ check if required headers are valid and exist in database """
-    if 'UUID' not in req.headers and 'UUID_SECRET' not in req.headers:
+    if 'UUID' not in req.headers or 'UUID_SECRET' not in req.headers:
         raise Exception("Error: missing required headers (UUID / UUID_SECRET)")
     if not uuid_is_valid(req.headers['UUID']) or not uuid_is_valid(req.headers['UUID_SECRET']):
         raise Exception("Error invalid UUID/UUID_SECRET format")
@@ -111,6 +111,7 @@ def register_user():
     # update db
     query_db_commit("INSERT INTO user (id, name, secret) VALUES (UNHEX('%s'), '%s', UNHEX('%s'))"
                     % (new_user.uuid, new_user.name, new_user.uuid_secret))
+
     return json.dumps(new_user.as_json())
 
 
@@ -139,8 +140,8 @@ class User():
 
     @staticmethod
     def get_users():
-        return [User(id, name, secret) for id, name, secret
-                in query_db("SELECT id, name, secret FROM user")]
+        return [User(id.lower(), name, secret.lower()) for id, name, secret
+                in query_db("SELECT HEX(id), name, HEX(secret) FROM user")]
 
 
 class Bot():
