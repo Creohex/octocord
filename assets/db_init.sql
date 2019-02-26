@@ -1,19 +1,27 @@
-# CLEAR TABLES
-# ...
+# Create database:
+CREATE DATABASE IF NOT EXISTS octocord;
 
-# CREATE TABLES
+# Switch to octocord db:
+USE octocord;
+
+# Delete tables:
+DROP table IF EXISTS user;
+DROP table IF EXISTS bot;
+DROP table IF EXISTS hook;
+
+# Create tables:
 CREATE TABLE user(
   id BINARY(16) NOT NULL,
   name VARCHAR(40) NOT NULL DEFAULT '',
-  secret BINARY(16) NOT NULL DEFAULT UNHEX(REPLACE(UUID(), '-', '')),
+  secret BINARY(16) NOT NULL,
+  #secret BINARY(16) NOT NULL DEFAULT UNHEX(REPLACE(UUID(), '-', '')),
   
-
   PRIMARY KEY (id)
 );
 
 CREATE TABLE bot(
   id INT NOT NULL AUTO_INCREMENT,
-  
+  # ...
 
   PRIMARY KEY (id)
 );
@@ -35,6 +43,6 @@ CREATE TABLE hook(
 
 
 
-# INITIALIZE DEFAULT DATA
+# Initialize default data
 # ...
 
